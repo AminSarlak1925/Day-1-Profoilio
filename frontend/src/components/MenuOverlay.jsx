@@ -1,51 +1,49 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MenuOverlay = ({ setIsOpen }) => {
+  const [hoveredImage, setHoveredImage] = useState(null);
+
   const links = [
-    { title: "Works", subtitle: "Selected Projects", id: "works" }, // Linked to ID
-    { title: "Studio", subtitle: "Our Philosophy", id: "studio" },
-    { title: "Journal", subtitle: "Thoughts & News", id: "journal" },
-    { title: "Contact", subtitle: "Get in touch", id: "contact" },
+    {
+      title: "Works",
+      id: "works",
+      src: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop",
+    },
+    {
+      title: "Studio",
+      id: "studio",
+      src: "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=1000&auto=format&fit=crop",
+    },
+    {
+      title: "Journal",
+      id: "journal",
+      src: "https://images.unsplash.com/photo-1479839672679-a46483c0e7c8?q=80&w=1200&auto=format&fit=crop",
+    },
+    {
+      title: "Contact",
+      id: "contact",
+      src: "https://images.unsplash.com/photo-1505544747201-9293153b925c?q=80&w=1200&auto=format&fit=crop",
+    },
   ];
 
   const handleLinkClick = (id) => {
-    setIsOpen(false); // Close menu
-    if (id) {
-      // Small timeout to allow menu to close before scrolling
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 500);
-    }
+    setIsOpen(false);
+    setTimeout(() => {
+      const element = document.getElementById(id);
+      if (element) element.scrollIntoView({ behavior: "smooth" });
+    }, 800); // Wait for exit animation
   };
 
   const menuVariants = {
-    initial: { opacity: 0, y: "-100%" },
+    initial: { clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" },
     animate: {
-      opacity: 1,
-      y: "0%",
+      clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
       transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] },
     },
     exit: {
-      opacity: 0,
-      y: "-100%",
+      clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)",
       transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] },
-    },
-  };
-
-  const containerVars = {
-    animate: { transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
-  };
-
-  const itemVars = {
-    initial: { opacity: 0, y: 40 },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
     },
   };
 
@@ -55,88 +53,57 @@ const MenuOverlay = ({ setIsOpen }) => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="fixed inset-0 z-40 bg-[#121212] text-slate-200 flex flex-col md:flex-row"
+      className="fixed inset-0 z-40 bg-[#0f0f0f] flex flex-col justify-center items-center overflow-hidden"
     >
-      {/* Decorative Noise Background */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      {/* BACKGROUND IMAGE REVEAL */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none filter grayscale contrast-125 transition-opacity duration-500">
+        <AnimatePresence mode="wait">
+          {hoveredImage && (
+            <motion.img
+              key={hoveredImage}
+              src={hoveredImage}
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full h-full object-cover"
+            />
+          )}
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
 
-      {/* --- COLUMN 1: NAVIGATION --- */}
-      <motion.div
-        variants={containerVars}
-        initial="initial"
-        animate="animate"
-        className="flex-1 flex flex-col justify-center items-start md:items-center px-12 md:px-0 py-20"
-      >
-        <div className="space-y-8 md:space-y-12">
-          {links.map((link, i) => (
-            <div key={i} className="overflow-hidden group relative">
-              <motion.div
-                variants={itemVars}
-                className="flex items-start gap-6 cursor-pointer"
-                onClick={() => handleLinkClick(link.id)}
-              >
-                {/* SIZE ADJUSTED: 
-                   text-3xl (Mobile) -> Big enough to tap, small enough to fit.
-                   text-5xl (Desktop) -> Elegant editorial size.
-                */}
-                <h2 className="text-3xl md:text-5xl font-serif text-slate-400 group-hover:text-white transition-colors duration-500 leading-none">
-                  {link.title}
-                </h2>
+      {/* MENU LINKS */}
+      <div className="relative z-10 flex flex-col items-center gap-4 md:gap-8 mix-blend-difference">
+        {links.map((link, i) => (
+          <div
+            key={i}
+            className="group relative overflow-hidden cursor-pointer"
+            onMouseEnter={() => setHoveredImage(link.src)}
+            onMouseLeave={() => setHoveredImage(null)}
+            onClick={() => handleLinkClick(link.id)}
+          >
+            <motion.h2
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+              transition={{ duration: 0.5, delay: 0.1 * i }}
+              className="text-6xl md:text-6xl font-serif text-slate-400 group-hover:text-white transition-colors duration-500 italic"
+            >
+              {link.title}
+            </motion.h2>
+          </div>
+        ))}
+      </div>
 
-                {/* Number Indicator */}
-                <span className="text-xs font-light uppercase tracking-widest text-slate-600 group-hover:text-slate-400 transition-colors duration-500 mt-1.5">
-                  0{i + 1}
-                </span>
-              </motion.div>
-
-              {/* Optional: Subtitle Reveal on Hover (Desktop) */}
-              <div className="hidden md:block h-0 overflow-hidden group-hover:h-auto transition-all duration-500 ease-out">
-                <p className="text-sm text-slate-600 font-light tracking-wider mt-2 pl-1">
-                  {link.subtitle}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* --- COLUMN 2: INFO --- */}
+      {/* FOOTER INFO */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { delay: 0.7, duration: 1 } }}
-        className="p-12 md:p-24 flex flex-col justify-end md:items-end border-t md:border-t-0 md:border-l border-white/5 bg-white/[0.01]"
+        animate={{ opacity: 1, transition: { delay: 0.5 } }}
+        className="absolute bottom-12 w-full px-12 flex justify-between text-xs uppercase tracking-widest text-slate-500 mix-blend-difference"
       >
-        <div className="space-y-12 text-left md:text-right">
-          <div>
-            <h3 className="text-[0.65rem] uppercase tracking-[0.3em] text-slate-500 mb-4 font-medium">
-              Location
-            </h3>
-            <p className="font-serif text-xl text-slate-300 leading-relaxed">
-              Vaasa, Finland
-              <br />
-              Ostrobothnia
-            </p>
-          </div>
-          <div>
-            <h3 className="text-[0.65rem] uppercase tracking-[0.3em] text-slate-500 mb-4 font-medium">
-              Socials
-            </h3>
-            <div className="flex gap-6 md:justify-end text-slate-400 text-sm font-light tracking-wider">
-              <a
-                href="#"
-                className="hover:text-white transition-colors duration-300 pb-1 border-b border-transparent hover:border-white/30"
-              >
-                Instagram
-              </a>
-              <a
-                href="#"
-                className="hover:text-white transition-colors duration-300 pb-1 border-b border-transparent hover:border-white/30"
-              >
-                LinkedIn
-              </a>
-            </div>
-          </div>
-        </div>
+        <span>Vaasa, Finland</span>
+        <span>Est. 2026</span>
       </motion.div>
     </motion.div>
   );

@@ -14,7 +14,7 @@ const articles = [
     date: "SEP 28",
     title: "Digital Brutalism",
     category: "Design Trend",
-    src: "https://images.unsplash.com/photo-1518005052357-e98719a29e66?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.pexels.com/photos/1722183/pexels-photo-1722183.jpeg",
   },
   {
     id: 3,
@@ -28,14 +28,14 @@ const articles = [
     date: "JUL 09",
     title: "Monochrome Ethics",
     category: "Essay",
-    src: "https://images.unsplash.com/photo-1505544747201-9293153b925c?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.pexels.com/photos/936722/pexels-photo-936722.jpeg",
   },
   {
     id: 5,
     date: "JUN 22",
     title: "Designing for Void",
     category: "Spatial",
-    src: "https://images.unsplash.com/photo-1465409042654-5314e9d17fa4?q=80&w=1200&auto=format&fit=crop",
+    src: "https://images.pexels.com/photos/1707823/pexels-photo-1707823.jpeg",
   },
 ];
 

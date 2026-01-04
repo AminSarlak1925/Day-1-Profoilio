@@ -37,24 +37,27 @@ const Works = () => {
     offset: ["start end", "end start"],
   });
 
-  // Create different speeds for columns (Parallax)
-  const yLeft = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const yRight = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  // --- DRAMATIC PARALLAX SETTINGS ---
+  // The left column moves UP much faster (-600px)
+  // The right column moves DOWN (+200px)
+  const yLeft = useTransform(scrollYProgress, [0, 1], [0, -600]);
+  const yRight = useTransform(scrollYProgress, [0, 1], [0, 200]);
 
   return (
     <section
       id="works"
       ref={containerRef}
-      className="relative z-20 bg-[#121212] py-32 px-4 md:px-12 overflow-hidden min-h-screen"
+      className="relative z-20 bg-[#0f0f0f] py-32 px-4 md:px-12 min-h-[150vh] overflow-hidden"
     >
-      {/* --- SECTION HEADER --- */}
-      <div className="max-w-7xl mx-auto mb-24 px-4">
+      {/* SECTION HEADER (Sticky Effect)
+         We make this sticky so the title stays with us for a bit while the grid moves.
+      */}
+      <div className="max-w-[1400px] mx-auto mb-32 px-4 sticky top-12 z-0 mix-blend-difference">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-xs uppercase tracking-[0.3em] text-slate-500 mb-4"
+          className="text-xs uppercase tracking-[0.4em] text-slate-500 mb-4"
         >
           Selected Works
         </motion.h2>
@@ -63,18 +66,18 @@ const Works = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="text-5xl md:text-8xl font-serif text-slate-200"
+          className="text-6xl md:text-9xl font-serif text-slate-200 pb-20"
         >
-          Visual <span className="italic text-slate-500">Chronicle</span>
+          Visual <span className="italic text-slate-600">Chronicle</span>
         </motion.h3>
       </div>
 
       {/* --- PARALLAX GRID --- */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
-        {/* COLUMN 1 (Moves Upwards) */}
+      <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-32 relative z-10">
+        {/* COLUMN 1 (Moves Upwards Rapidly) */}
         <motion.div
           style={{ y: yLeft }}
-          className="flex flex-col gap-12 md:gap-32"
+          className="flex flex-col gap-24 md:gap-48"
         >
           {projects
             .filter((_, i) => i % 2 === 0)
@@ -83,10 +86,10 @@ const Works = () => {
             ))}
         </motion.div>
 
-        {/* COLUMN 2 (Moves Downwards/Slower) */}
+        {/* COLUMN 2 (Moves Downwards / Starts lower) */}
         <motion.div
           style={{ y: yRight }}
-          className="flex flex-col gap-12 md:gap-32 md:pt-32"
+          className="flex flex-col gap-24 md:gap-48 md:pt-[40vh]"
         >
           {projects
             .filter((_, i) => i % 2 !== 0)
@@ -103,39 +106,57 @@ const Works = () => {
 const WorkItem = ({ project }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.8 }}
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} // "Cinematic" cubic bezier
       viewport={{ once: true, margin: "-10%" }}
-      className="group relative cursor-pointer"
+      className="group relative cursor-pointer w-full"
     >
-      {/* Image Container with Overflow Hidden */}
-      <div className="relative overflow-hidden aspect-[3/4] md:aspect-[4/5]">
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+      {/* Image Container 
+        Using clip-path for a "Curtain Reveal" effect 
+      */}
+      <motion.div
+        initial={{ clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" }}
+        whileInView={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
+        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+        viewport={{ once: true }}
+        className="relative overflow-hidden aspect-[3/4] md:aspect-[4/5] bg-slate-800"
+      >
+        {/* Dark overlay that disappears on hover */}
+        <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-all duration-700 z-10" />
 
         <motion.img
           src={project.src}
           alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110 grayscale-[30%] group-hover:grayscale-0"
+          className="w-full h-full object-cover transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110 grayscale-[50%] group-hover:grayscale-0"
         />
 
-        {/* Hover Overlay Text */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-end p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/80 to-transparent">
-          <span className="text-xs text-slate-400 uppercase tracking-widest mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+        {/* HOVER INFO (Floating) 
+           Moves slightly opposite to the mouse for a floaty feel (via CSS transform)
+        */}
+        <div className="absolute bottom-8 left-8 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+          <span className="block text-[10px] uppercase tracking-[0.2em] text-white/70 mb-2">
             {project.category}
           </span>
-          <h4 className="text-3xl font-serif text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
+          <h4 className="text-4xl font-serif text-white italic">
             {project.title}
           </h4>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Mobile-Only Visible Title (Hidden on Desktop hover state) */}
-      <div className="mt-4 md:hidden">
-        <h4 className="text-2xl font-serif text-slate-200">{project.title}</h4>
-        <span className="text-xs text-slate-500 uppercase tracking-widest">
-          {project.category}
-        </span>
+      {/* Visible Title (Mobile / Default State) */}
+      <div className="mt-6 flex justify-between items-end border-b border-white/10 pb-4 group-hover:border-white/50 transition-colors duration-500">
+        <div>
+          <h4 className="text-2xl font-serif text-slate-300 group-hover:text-white transition-colors">
+            {project.title}
+          </h4>
+          <span className="text-xs text-slate-600 uppercase tracking-widest">
+            {project.category}
+          </span>
+        </div>
+        <div className="text-xs text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          View Case
+        </div>
       </div>
     </motion.div>
   );

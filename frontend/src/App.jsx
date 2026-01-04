@@ -4,11 +4,16 @@ import Hero from "./components/Hero";
 import Studio from "./components/Studio";
 import Works from "./components/Works";
 import Journal from "./components/Journal";
-import Contact from "./components/Contact"; // <-- Import Contact
+import Contact from "./components/Contact";
+import CustomCursor from "./components/CustomCursor";
+// 1. Import the button
+import ScrollToTop from "./components/ScrollToTop";
 
 const App = () => {
   return (
-    <div className="bg-[#1a1a1a] text-slate-200 font-sans selection:bg-slate-600 selection:text-white overflow-x-hidden">
+    <div className="bg-[#121212] text-slate-200 font-sans selection:bg-slate-600 selection:text-white overflow-x-hidden">
+      <CustomCursor />
+
       {/* Global Grain Overlay */}
       <div
         className="fixed inset-0 pointer-events-none z-50 opacity-[0.05] mix-blend-overlay"
@@ -24,10 +29,13 @@ const App = () => {
         <Studio />
         <Works />
         <Journal />
-        <Contact /> {/* <-- The Grand Finale */}
+        <Contact />
       </main>
 
-      {/* Minimal Footer (Since Contact holds the heavy info) */}
+      {/* 2. Add the Scroll Button Here */}
+      <ScrollToTop />
+
+      {/* Footer */}
       <div className="py-8 bg-[#0f0f0f] flex items-center justify-center relative z-10 border-t border-slate-900/50">
         <p className="text-slate-700 text-[10px] tracking-widest uppercase font-semibold">
           © 2026 The Monolith. All Rights Reserved.
